@@ -8,13 +8,23 @@ from keras.datasets import mnist
 import matplotlib.pyplot as plt
 
 fig, ax = plt.subplots(nrows=2, ncols=5, sharex=True, sharey=True,)
-ax = ax.flatten()
-for i in range(10):
-    img = X_train[y_train == i][0].reshape(28, 28)
-    ax[i].imshow(img, cmap='Greys')
 
-ax[0].set_xticks([])
-ax[0].set_yticks([])
+# Method 1
+# ax = ax.flatten()
+# for i in range(10):
+#     # img = X_train[y_train == i][0].reshape(28, 28)
+#     img = X_train[y_train == i][0]
+#     # ax[i].imshow(img, cmap='Greys')
+#     ax[i].imshow(img, cmap=plt.get_cmap('gray'))
+
+# Method 2
+for j in range(2):
+    for i in range(5):
+        img = X_train[y_train == i + 5 * j][0]
+        ax[j, i].imshow(img, cmap=plt.get_cmap('gray'))
+
+# ax[0].set_xticks([])
+# ax[0].set_yticks([])
 plt.tight_layout()
 # plt.savefig('images/12_5.png', dpi=300)
 plt.show()

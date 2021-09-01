@@ -11,6 +11,8 @@ from matplotlib import pyplot as plt
 import os
 from datetime import datetime
 
+from tensorflow.python.keras.backend import dropout
+
 start=datetime.now()
 
 # 載入 MNIST 資料庫的訓練資料，並自動分為『訓練組』及『測試組』
@@ -21,8 +23,10 @@ start=datetime.now()
 # 建立簡單的線性執行的模型
 model = tf.keras.models.Sequential()
 # Add Input layer, 隱藏層(hidden layer) 有 256個輸出變數
-model.add(Dense(units=256, input_dim=784, kernel_initializer='normal', activation='relu')) 
-# model.add(Dense(units=64, input_dim=784, kernel_initializer='normal', activation='relu')) 
+model.add(Dense(units=256, input_dim=784, kernel_initializer='normal', activation='relu'))
+model.add(Dropout(0.2))
+model.add(Dense(units=64, input_dim=784, kernel_initializer='normal', activation='relu'))
+model.add(Dropout(0.2))
 # Add output layer
 model.add(Dense(units=10, kernel_initializer='normal', activation='softmax'))
 
@@ -51,15 +55,18 @@ x_Test_norm = X_test_2D/255
 train_history = model.fit(x_Train_norm, y_TrainOneHot, validation_split=0.2, epochs=10, batch_size=800, verbose=2)
 
 print(model.summary())
+print('-' * 30)
 
 # 顯示訓練成果(分數)
-scores = model.evaluate(x_Test_norm, y_TestOneHot)  
-print()  
+scores = model.evaluate(x_Test_norm, y_TestOneHot)
+print('scores: ', scores)
+print()
 print("\t[Info] Accuracy of testing data = {:2.1f}%".format(scores[1]*100.0))  
 
 # 預測(prediction)
 X = x_Test_norm
-predictions = model.predict_classes(X)
+# predictions = model.predict_classes(X) # predict_classes is deprecated and will be removed after 2021-01-01.
+predictions = np.argmax(model.predict(X), axis = 1)
 # get prediction result
 print('prediction:', predictions[0:20])
 print('actual    :', y_test[0:20])
@@ -67,9 +74,10 @@ print('actual    :', y_test[0:20])
 print(datetime.now()-start)
 
 # # 顯示錯誤的資料圖像
-# X2 = X_test[8,:,:]
+X2 = X_test[8,:,:]
 # plt.imshow(X2.reshape(28,28))
-# plt.show() 
+plt.imshow(X2)
+plt.show()
 
 # 模型結構存檔
 json_string = model.to_json()
@@ -82,6 +90,8 @@ model.save_weights("./tf_model.h5", save_format='h5')
 
 from sklearn.metrics import confusion_matrix
 confmat = confusion_matrix(y_true=y_test, y_pred=predictions)
+print('confmat: \n', confmat)
+print('-' * 30)
 
 # draw confusion_matrix
 import matplotlib.pyplot as plt

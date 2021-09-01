@@ -19,7 +19,7 @@ except:
     
 
 from keras.datasets import mnist
-data_folder = os.path.join(os.getcwd(), "../datasets/mnist.npz")
+# data_folder = os.path.join(os.getcwd(), "../datasets/mnist.npz")
 (X_train, y_train), (X_test, y_test) = mnist.load_data()
 
 import matplotlib.pyplot as plt
@@ -27,7 +27,8 @@ import matplotlib.pyplot as plt
 fig, ax = plt.subplots(nrows=2, ncols=5, sharex=True, sharey=True,)
 ax = ax.flatten()
 for i in range(10):
-    img = X_train[y_train == no][i].reshape(28, 28)
+    # img = X_train[y_train == no][i].reshape(28, 28)
+    img = X_train[y_train == no][i]
     
     # show pixels' value
     for j in range(28):
@@ -37,7 +38,8 @@ for i in range(10):
         print(pixels)
     print("")
 
-    ax[i].imshow(img, cmap='Greys')
+    # ax[i].imshow(img, cmap='Greys')
+    ax[i].imshow(img, cmap=plt.get_cmap('gray'))
 
 ax[0].set_xticks([])
 ax[0].set_yticks([])

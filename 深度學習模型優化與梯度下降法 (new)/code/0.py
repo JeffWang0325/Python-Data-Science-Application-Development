@@ -19,7 +19,9 @@ start=datetime.now()
 # 建立簡單的線性執行的模型
 model = keras.models.Sequential()
 # Add Input layer, 隱藏層(hidden layer) 有 256個輸出變數
-model.add(Dense(units=256, input_dim=784, kernel_initializer='normal', activation='relu')) 
+# model.add(Dense(units=256, input_dim=784, kernel_initializer='normal', activation='relu')) 
+model.add(Dense(units=256, kernel_initializer='normal', activation='relu')) 
+model.add(Dropout(0.2))
 #model.add(Dense(units=64, kernel_initializer='normal', activation='relu')) 
 # Add output layer
 model.add(Dense(units=10, kernel_initializer='normal', activation='softmax'))
@@ -32,8 +34,8 @@ y_TrainOneHot = np_utils.to_categorical(y_train)
 y_TestOneHot = np_utils.to_categorical(y_test) 
 
 # 將 training 的 input 資料轉為2維
-X_train_2D = X_train.reshape(60000, 28*28).astype('float32')  
-X_test_2D = X_test.reshape(10000, 28*28).astype('float32')  
+X_train_2D = X_train.reshape(X_train.shape[0], -1).astype('float32')  
+X_test_2D = X_test.reshape(X_test.shape[0], -1).astype('float32')  
 
 x_Train_norm = X_train_2D/255
 x_Test_norm = X_test_2D/255
@@ -50,15 +52,16 @@ print("\t[Info] Accuracy of testing data = {:2.1f}%".format(scores[1]*100.0))
 
 # 預測(prediction)
 X = x_Test_norm
-predictions = model.predict_classes(X)
+# predictions = model.predict_classes(X)
+predictions = np.argmax(model.predict(X), axis=1)
 # get prediction result
-print('prediction:', predictions[0:20])
-print('actual    :', y_test[0:20])
+print('prediction:', predictions[:20])
+print('actual    :', y_test[:20])
 
 # # 顯示錯誤的資料圖像
-# X2 = X_test[8,:,:]
-# plt.imshow(X2.reshape(28,28))
-# plt.show() 
+X2 = X_test[8,:,:]
+plt.imshow(X2)
+plt.show() 
 
 
 # 模型結構存檔
@@ -93,16 +96,17 @@ plt.show()
 
 
 
-# # 取得模型組態
-# print("config = ", model.get_config())
-# # 取得模型所有權重
-# print("weights = ", model.get_weights())
+# 取得模型組態
+print("config = ", model.get_config())
+# 取得模型所有權重
+print("weights = ", model.get_weights())
 # 取得模型彙總資訊
 print("summary = ", model.summary())
-# # 取得網路層資訊
-# print("layer = ", model.get_layer(index=1).name)
+# 取得網路層資訊
+print("layer = ", model.get_layer(index=1).name)
+print("layer = ", model.get_layer(index=2).name)
 # 取得參數總數
 print("params = ", model.count_params())
 
-# from keras.utils import plot_model
-# plot_model(model, to_file='model.png')
+from keras.utils import plot_model
+plot_model(model, to_file='model.png')
